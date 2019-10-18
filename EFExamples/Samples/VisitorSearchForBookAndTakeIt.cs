@@ -11,6 +11,7 @@ namespace EFExamples.Samples
 {
     public static class VisitorSearchForBookAndTakeIt
     {
+
         public static void DoItTwoQueries() {
             using (var ctx = new EFExamplesContext()) {
                 var visitor = new Visitor() {
@@ -20,14 +21,12 @@ namespace EFExamples.Samples
 
                 var currentDate = DateTime.Now;
                 // посетитель смотрит какие книги есть в наличии в библиотеке
-                var booksQuery = ctx.Libraries
+                var booksQuery = ctx.Libraries.Include(x => x.Racks)
                     // только в библиотеке Big Library
                     .Where(x => x.Name == "Big library")
                     // выбираем смотрим на все реки и из каждого выбираем группу обьектов
                     .SelectMany(x => x.Racks.SelectMany(rack => rack.Books))
                     .Where(x => x.IssueDate == null);
-                // альтернативный вариант в котором мы выбираем только нужные нам поля
-                // rack.Books.Select(book => new { book.BookId, book.PlacedInRackDate, book.IssueDate }
 
                 // терминальный оператор, по вызову которого запрос отправляется в базу и мы таки получаем книги
                 var booksInLibrary = booksQuery.ToList();
@@ -134,5 +133,58 @@ namespace EFExamples.Samples
                 ctx.SaveChanges();
             }
         }
+
+        // для запуска этого примера нужно раскоментировать указанные строки в файлe BookInLibrary, BookInLibraryEntityConfiguration
+        // после чего создать миграцию и запустить её (это нужно для создания удалённых ключей в базе данных)
+        /*public static void DoItLazyLoading()
+        {
+
+            using (var ctx = new EFExamplesContext())
+            {
+                var visitor = new Visitor()
+                {
+                    Name = "Oleg",
+                    IssuedBooks = new List<IssuedBook>(),
+                };
+
+                var currentDate = DateTime.Now;
+                // посетитель смотрит какие книги есть в наличии в библиотеке
+                var booksQuery = ctx.Libraries.Include(x => x.Racks)
+                    // только в библиотеке Big Library
+                    .Where(x => x.Name == "Big library")
+                    // выбираем смотрим на все реки и из каждого выбираем группу обьектов
+                    .SelectMany(x => x.Racks.SelectMany(rack => rack.Books))
+                    .Where(x => x.IssueDate == null);
+
+                // терминальный оператор, по вызову которого запрос отправляется в базу и мы таки получаем книги
+                var booksInLibrary = booksQuery.ToList();
+
+                foreach (var bookInLibrary in booksInLibrary)
+                {
+                    // в строке ниже происходит SQL запрос, необходимый для создания обьекта типа Book, загружаемого как ассоциация
+                    // обьекта bookInLibrary с помощью lazy loading
+                    var visitorLikeThisBook = bookInLibrary.Book.Name.ToLowerInvariant().Contains("lord");
+                    if (visitorLikeThisBook)
+                    {
+                        visitor.IssuedBooks.Add(new IssuedBook()
+                        {
+                            // при повторном обращении к bookInLibrary.Book - запись не будет заново загружена из базы данных
+                            // т.к. свойство bookInLibrary.Book уже инициализировано
+                            BookId = bookInLibrary.Book.Id,
+                            IssueDate = DateTime.Now,
+                            LibraryId = ctx.Libraries.Where(x => x.Name == "Big library").SingleOrDefault().Id,
+                        });
+
+                        bookInLibrary.IssueDate = DateTime.Now;
+                        // здесь нам не нужно сохранять посетителя "до" сохранения книги.
+                        // EF понимает что посетитель только создаётся и его айди будет получин ДО обновления книги
+                        bookInLibrary.IssuedToVisitor = visitor;
+                        break;
+                    }
+                }
+
+                ctx.SaveChanges();
+            }
+        }*/
     }
 }

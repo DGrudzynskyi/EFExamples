@@ -52,7 +52,7 @@
 
             context.Libraries.AddOrUpdate(new Library()
             {
-                Id = 1,
+                Id = 2,
                 Name = "Big library",
                 Address = "Kiev",
                 OpenAt = new DateTime(2010, 1, 1, 8, 0, 0),

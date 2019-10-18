@@ -2,6 +2,7 @@
 using EFExamples.Schema.BookAggregate;
 using EFExamples.Schema.LibraryAggregate;
 using EFExamples.Schema.VisitorAggregate;
+using System;
 using System.Data.Entity;
 
 namespace EFExamples
@@ -16,6 +17,11 @@ namespace EFExamples
         public DbSet<Visitor> Visitors { get; set; }
 
         public EFExamplesContext() : base("EFExamplesContext") {
+
+            this.Configuration.LazyLoadingEnabled = true;
+
+            // логгируем все обращения к базе данных в консоль для того что-б видеть когда и какие запросы посылаются
+            this.Database.Log = (s => Console.WriteLine(s));
 
             // указываем что база данных должна быть создана если не существует.
             // существуют также DropCreateDatabaseIfModelChanges и DropCreateDatabaseAlways описанные по ссылке

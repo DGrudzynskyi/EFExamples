@@ -18,7 +18,7 @@ namespace EFExamples.Schema.LibraryAggregate
 
         public string Address { get; set; }
 
-        public List<Rack> Racks { get; set; }
+        public virtual List<Rack> Racks { get; set; }
 
     }
 }

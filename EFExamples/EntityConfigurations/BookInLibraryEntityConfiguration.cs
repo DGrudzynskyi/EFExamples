@@ -17,10 +17,10 @@ namespace EFExamples.EntityConfigurations
             // название таблицы будет BookInLibraries что нам не подходит
             this.ToTable("BooksInLibrary");
 
-            // IsConcurrencyToken никак не влияет на столбец таблицы, созданный для поля PlacedInRackDate
-            // но EF каждый раз записывая изменения с помощью SaveChanges будет проверять не изменилось ли это поле
-            // относительно того, что было записано ДО на момент получения записи и если изменилось - выбрасывать исключение
-            // this.Property(p => p.PlacedInRackDate).IsConcurrencyToken();
+
+            // раскоментируйте строки ниже для демонстрации примера с lazy loading
+            //this.HasRequired(x => x.Book).WithMany().HasForeignKey(x => x.BookId);
+            //this.HasOptional(x => x.IssuedToVisitor).WithMany().HasForeignKey(x => x.IssuedToVisitorId);
         }
     }
 }

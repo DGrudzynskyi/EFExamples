@@ -20,31 +20,6 @@
                 .Index(t => t.Name, unique: true);
             
             CreateTable(
-                "dbo.Libraries",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        Name = c.String(maxLength: 255),
-                        OpenAt = c.DateTime(nullable: false, precision: 7, storeType: "datetime2"),
-                        OpenTill = c.DateTime(nullable: false, precision: 7, storeType: "datetime2"),
-                        Address = c.String(),
-                    })
-                .PrimaryKey(t => t.Id)
-                .Index(t => t.Name, unique: true);
-            
-            CreateTable(
-                "dbo.Racks",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        Floor = c.Int(nullable: false),
-                        Library_Id = c.Int(),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Libraries", t => t.Library_Id)
-                .Index(t => t.Library_Id);
-            
-            CreateTable(
                 "dbo.BooksInLibrary",
                 c => new
                     {
@@ -61,11 +36,37 @@
                 .Index(t => t.Rack_Id);
             
             CreateTable(
+                "dbo.Racks",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Floor = c.Int(nullable: false),
+                        Library_Id = c.Int(),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.Libraries", t => t.Library_Id)
+                .Index(t => t.Library_Id);
+            
+            CreateTable(
+                "dbo.Libraries",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Name = c.String(maxLength: 255),
+                        OpenAt = c.DateTime(nullable: false, precision: 7, storeType: "datetime2"),
+                        OpenTill = c.DateTime(nullable: false, precision: 7, storeType: "datetime2"),
+                        Address = c.String(),
+                    })
+                .PrimaryKey(t => t.Id)
+                .Index(t => t.Name, unique: true);
+            
+            CreateTable(
                 "dbo.Visitors",
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
                         Name = c.String(),
+                        BadGuy = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.Id);
             
@@ -92,15 +93,15 @@
             DropForeignKey("dbo.Racks", "Library_Id", "dbo.Libraries");
             DropForeignKey("dbo.BooksInLibrary", "Rack_Id", "dbo.Racks");
             DropIndex("dbo.IssuedBooks", new[] { "VisitorId" });
-            DropIndex("dbo.BooksInLibrary", new[] { "Rack_Id" });
-            DropIndex("dbo.Racks", new[] { "Library_Id" });
             DropIndex("dbo.Libraries", new[] { "Name" });
+            DropIndex("dbo.Racks", new[] { "Library_Id" });
+            DropIndex("dbo.BooksInLibrary", new[] { "Rack_Id" });
             DropIndex("dbo.Books", new[] { "Name" });
             DropTable("dbo.IssuedBooks");
             DropTable("dbo.Visitors");
-            DropTable("dbo.BooksInLibrary");
-            DropTable("dbo.Racks");
             DropTable("dbo.Libraries");
+            DropTable("dbo.Racks");
+            DropTable("dbo.BooksInLibrary");
             DropTable("dbo.Books");
         }
     }

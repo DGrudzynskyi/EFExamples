@@ -13,5 +13,7 @@ namespace EFExamples.Schema.VisitorAggregate
         public string Name { get; set; }
 
         public List<IssuedBook> IssuedBooks { get; set; }
+
+        public bool BadGuy { get; set; }
     }
 }
